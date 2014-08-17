@@ -13,3 +13,19 @@ body{font-size: 18px;}
 	position:static;
 	bottom:10%;
 }
+.ok{
+	width:32px;
+	height: 32px;
+	cursor:pointer;
+}
+.ok:hover{
+	opacity:0.5;
+}
+.cancle{
+	width:32px;
+	height: 32px;
+	cursor:pointer;
+}
+.cancle:hover{
+	opacity:0.5;
+}
