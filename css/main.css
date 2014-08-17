@@ -1,0 +1,15 @@
+body{font-size: 18px;}
+.fontB{font-weight:bold;}
+.center {
+  width: auto;
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+.margin-bottom{
+	margin-bottom: 15px;
+}
+.bottom{
+	position:static;
+	bottom:10%;
+}
