@@ -39,7 +39,7 @@
 		<div class="container">
             <!-- 游戏介绍 -->
             <div id="" class="jumbotron">
-                点击扑克以及运算符完成24点的计算。
+                点击扑克以及运算符完成24点的计算。提示：J-11，Q-12，K-13。
             </div>
             <div class="row">
                 <!-- 图片中对应的数字（可直接点击图片） -->
@@ -49,16 +49,16 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        <button class="numbtn btn btn-default"><img class="img1" src="" alt="loading"></img></button>
+                                        <button class="numbtn btn btn-default" name="numbtn1"><img class="img1" src="" alt="loading"></img></button>
                                     </td>
                                     <td>
-                                        <button class="numbtn btn btn-default"><img class="img2" src="" alt="loading"></img></button>
+                                        <button class="numbtn btn btn-default" name="numbtn2"><img class="img2" src="" alt="loading"></img></button>
                                     </td>
                                     <td>
-                                        <button class="numbtn btn btn-default"><img class="img3" src="" alt="loading"></img></button>
+                                        <button class="numbtn btn btn-default" name="numbtn3"><img class="img3" src="" alt="loading"></img></button>
                                     </td>
                                     <td>
-                                        <button class="numbtn btn btn-default"><img class="img4" src="" alt="loading"></img></button>
+                                        <button class="numbtn btn btn-default"  name="numbtn4"><img class="img4" src="" alt="loading"></img></button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -69,18 +69,18 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        <button class="numbtn btn btn-default"><img class="img1" src="" alt="loading"></img></button>
+                                        <button class="numbtn btn btn-default" name="numbtn1"><img class="img1" src="" alt="loading"></img></button>
                                     </td>
                                     <td>
-                                        <button class="numbtn btn btn-default"><img class="img2" src="" alt="loading"></img></button>
+                                        <button class="numbtn btn btn-default" name="numbtn2"><img class="img2" src="" alt="loading"></img></button>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <button class="numbtn btn btn-default"><img class="img3" src="" alt="loading"></img></button>
+                                        <button class="numbtn btn btn-default" name="numbtn3"><img class="img3" src="" alt="loading"></img></button>
                                     </td>
                                     <td>
-                                        <button class="numbtn btn btn-default"><img class="img4" src="" alt="loading"></img></button>
+                                        <button class="numbtn btn btn-default" name="numbtn4"><img class="img4" src="" alt="loading"></img></button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -120,8 +120,9 @@
             <div class="row jumbotron">
                 <div id="show" class="fontB"></div>
                 <div class="btn-group pull-right">
-                    <img class="ok" src="img/twg_retina_icon/checkmark_64.png" alt="ok" onclick="calculate()"></img>
-                    <img class="cancle" src="img/twg_retina_icon/delete_64.png" alt="cancle" onclick="clr()"></img>
+                    <img class="ok" src="img/twg_retina_icon/checkmark_64.png" alt="ok" onclick="calculate()" title="确定"></img>
+                    <img class="cancle" src="img/twg_retina_icon/arrow_left_64.png" alt="delete" onclick="del()"title="删除"></img>
+                    <img class="cancle" src="img/twg_retina_icon/delete_64.png" alt="cancle" onclick="clr()"title="清空"></img>
                 </div>
             </div>
         </div>
@@ -135,8 +136,9 @@
         //绑定点击扑克牌事件
         $('.numbtn').bind("click",function(){
             if(!$(this).hasClass('active')){
-                $('#show').append($(this).find('img').attr('value'));
-                $(this).addClass('active');
+                setCookieAndShow(ArrayF,$(this).find('img').attr('value'));
+                var thisname = '[name='+$(this).attr('name')+']';
+                $(thisname).addClass('active');
             }
         });
         </script>

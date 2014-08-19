@@ -1,3 +1,6 @@
+// 存储公式
+var ArrayF = new Array();
+
 // 存储扑克图片地址
 var puke = [{"src":"img/puke/htA.jpg"},
 
@@ -25,21 +28,84 @@ var puke = [{"src":"img/puke/htA.jpg"},
 
 			{"src":"img/puke/htK.jpg"},];
 
+//放入Cookie
+function setCookie(name, value, expires, path, domain, secure) {
+	var exdate = new Date();
+	exdate.setDate(exdate.getDate() + expires);
+	document.cookie = name + "=" + value +
+		((expires) ? "; expires=" + exdate.toGMTString() : "") +
+		((path) ? ("; path=" + path) : "") +
+		((domain) ? "; domain=" + domain : "") +
+		((secure) ? "; secure" : "");
+}
 
-// 随机产生四个数字并为图片替换相应数字的图片
-function beginGame(){
-	var i1 = Math.ceil(Math.random()*(0-12)+12),//Math.random()*(n-m)+m  m-n之间
-	i2 = Math.ceil(Math.random()*(0-12)+12),
-	i3 = Math.ceil(Math.random()*(0-12)+12),
-	i4 = Math.ceil(Math.random()*(0-12)+12);
-	$('.img1').attr("src",puke[i1].src);
-	$('.img1').attr("value",i1+1);
-	$('.img2').attr("src",puke[i2].src);
-	$('.img2').attr("value",i2+1);
-	$('.img3').attr("src",puke[i3].src);
-	$('.img3').attr("value",i3+1);
-	$('.img4').attr("src",puke[i4].src);
-	$('.img4').attr("value",i4+1);
+//取出Cookie值
+function getCookie(name) {
+    //如果存在Cookie，则取之，反之则返回一个空串
+    if (document.cookie.length > 0) {
+        //找到以“name=”样式开头的字符串在整个Cookie串中第一次出现的位置
+        start = document.cookie.indexOf(name + "=");
+        //如果找到了，才执行以下操作，后面的操作是取出name所对应的值
+        if (start != -1) {
+            //将第一次出现的位置加上name的长度，然后加上等号所在的1位，此时可将起始重新定位到等号后面的一位
+            start = start + name.length + 1;
+            //下面将找出value的终止位置，即从新的起始位置找，直到找到分号所在的位置
+            end = document.cookie.indexOf(";", start);
+            //如果没有找到分号，则表示已经到了最后一个名值对，而最后一个名值对是没有分号的，此时需要手动的将终止位置设置为整个cookie的长度
+            if (end == -1) {
+                end = document.cookie.length;
+            }
+            //在整个Cookie串截取出name所对应的value
+            return unescape(document.cookie.substring(start, end));
+        }
+    }
+    return "";
+}
+
+// 消息提示
+function warn(msg,opt,left,top){
+	if(opt){
+	var obj = $("#"+opt);
+	}
+	new Toast({context:$('body'),message:msg},obj,left,top).show();
+	
+	}
+var Toast = function(config,obj,left,top){
+	this.context = config.context==null?$('body'):config.context;//上下文
+	this.message = config.message;//显示内容
+	this.time = config.time==null?3000:config.time;//持续时间
+	this.left = config.left;//距容器左边的距离
+	this.top = (screen.availHeight/4)*3;//距容器上方的距离
+	if(obj){
+	// this.left = obj.offset().left + left; // 居中
+	this.top = obj.offset().top + top;
+	}
+	this.init();
+}
+var msgEntity;
+Toast.prototype = {
+	//初始化显示的位置内容等
+	init : function(){
+		$("#toastMessage").remove();
+		//设置消息体
+		var msgDIV = new Array();
+		msgDIV.push('<div id="toastMessage">');
+		msgDIV.push('<span>'+this.message+'</span>');
+		msgDIV.push('</div>');
+		msgEntity = $(msgDIV.join('')).appendTo(this.context);
+		//设置消息样式
+		var left = this.left == null ? this.context.width()/2-msgEntity.find('span').width()/2 : this.left;
+		var top = this.top == null ? '20px' : this.top;
+		msgEntity.css({position:'absolute',top:top,'z-index':'99',left:left,'background-color':'black',color:'white','font-size':'12px',padding:'5px',margin:'5px','border-radius':'4px','-moz-border-radius':'4px','-webkit-border-radius':'4px',opacity:'0.5','font-family':'微软雅黑'});
+		//msgEntity.addClass(".toast");
+		msgEntity.hide();
+	},
+	//显示动画
+	show :function(){
+		msgEntity.fadeIn(this.time/2);
+		msgEntity.fadeOut(this.time/2);
+	}
+		
 }
 
 //检测公式左右括号对应情况
@@ -54,6 +120,17 @@ function checkParentheses(e){
 		}
 	}
 	return num_right==num_left;
+}
+
+//判断是否四张牌都选择了
+function checkAll(){
+	var flag = true;
+	$(".numbtn").each(function(){
+      	if(!$(this).hasClass('active')){
+			flag = false;
+		}
+    });
+	return flag;
 }
 
 //计算公式方法
@@ -170,59 +247,52 @@ function func(txt)
 	}
 }
 
-
-
-// 消息提示
-function warn(msg,opt,left,top){
-	if(opt){
-	var obj = $("#"+opt);
-	}
-	new Toast({context:$('body'),message:msg},obj,left,top).show();
-	
-	}
-var Toast = function(config,obj,left,top){
-	this.context = config.context==null?$('body'):config.context;//上下文
-	this.message = config.message;//显示内容
-	this.time = config.time==null?3000:config.time;//持续时间
-	this.left = config.left;//距容器左边的距离
-	this.top = (screen.availHeight/4)*3;//距容器上方的距离
-	if(obj){
-	// this.left = obj.offset().left + left; // 居中
-	this.top = obj.offset().top + top;
-	}
-	this.init();
-}
-var msgEntity;
-Toast.prototype = {
-	//初始化显示的位置内容等
-	init : function(){
-		$("#toastMessage").remove();
-		//设置消息体
-		var msgDIV = new Array();
-		msgDIV.push('<div id="toastMessage">');
-		msgDIV.push('<span>'+this.message+'</span>');
-		msgDIV.push('</div>');
-		msgEntity = $(msgDIV.join('')).appendTo(this.context);
-		//设置消息样式
-		var left = this.left == null ? this.context.width()/2-msgEntity.find('span').width()/2 : this.left;
-		var top = this.top == null ? '20px' : this.top;
-		msgEntity.css({position:'absolute',top:top,'z-index':'99',left:left,'background-color':'black',color:'white','font-size':'12px',padding:'5px',margin:'5px','border-radius':'4px','-moz-border-radius':'4px','-webkit-border-radius':'4px',opacity:'0.5','font-family':'微软雅黑'});
-		//msgEntity.addClass(".toast");
-		msgEntity.hide();
-	},
-	//显示动画
-	show :function(){
-		msgEntity.fadeIn(this.time/2);
-		msgEntity.fadeOut(this.time/2);
-	}
-		
+// 存储Cookie并显示到show
+function setCookieAndShow(a,c){
+	a.push(c);
+    setCookie('ArrayF',a);
+    $('#show').html(a.join(''));
 }
 
+// 随机产生四个数字并为图片替换相应数字的图片
+function beginGame(){
+	var i1 = Math.ceil(Math.random()*(0-12)+12),//Math.random()*(n-m)+m  m-n之间
+	i2 = Math.ceil(Math.random()*(0-12)+12),
+	i3 = Math.ceil(Math.random()*(0-12)+12),
+	i4 = Math.ceil(Math.random()*(0-12)+12);
+	$('.img1').attr("src",puke[i1].src);
+	$('.img1').attr("value",i1+1);
+	$('.img2').attr("src",puke[i2].src);
+	$('.img2').attr("value",i2+1);
+	$('.img3').attr("src",puke[i3].src);
+	$('.img3').attr("value",i3+1);
+	$('.img4').attr("src",puke[i4].src);
+	$('.img4').attr("value",i4+1);
+}
 
 //清空
 function clr(){
     $('#show').empty();
+    ArrayF.splice(0,ArrayF.length);
+    setCookie('ArrayF',ArrayF);
     $('.numbtn').removeClass('active');
+}
+
+//删除
+function del(){
+	//如果是数字将卡牌移除avtive
+	var last = ArrayF.length-1;
+	$('.numbtn').each(function(){
+		if($(this).find('img').attr('value')==ArrayF[last] && $(this).hasClass('active')){
+			var thisname = '[name='+$(this).attr('name')+']';
+            $(thisname).removeClass('active');
+			return false;
+		}
+	});
+	//删除
+	ArrayF.pop();
+	setCookie('ArrayF',ArrayF);
+	$('#show').html(ArrayF.join(''));
 }
 
 //点击操作符
@@ -230,41 +300,31 @@ function opt(o){
     switch(o)
     {
     case '+':
-        $('#show').append('+');
+        setCookieAndShow(ArrayF,'+');
         break;
     case '-':
-        $('#show').append('-');
+        setCookieAndShow(ArrayF,'-');
         break;
     case '*':
-        $('#show').append('*');
+        setCookieAndShow(ArrayF,'*');
         break;
     case '/':
-        $('#show').append('/');
+        setCookieAndShow(ArrayF,'/');
         break;
     case '(':
-        $('#show').append('(');
+        setCookieAndShow(ArrayF,'(');
         break;
     case ')':
-        $('#show').append(')');
+        setCookieAndShow(ArrayF,')');
         break;
     default:
         warn('对不起，发生错误，请刷新重来','info');
     }
 }
 
-//判断是否四张牌都选择了
-function checkAll(){
-	var flag = true;
-	$(".numbtn").each(function(){
-      	if(!$(this).hasClass('active')){
-			flag = false;
-		}
-    });
-	return flag;
-}
-
 //计算结果并提示
 function calculate(){
+	//判断四张牌是否都选择
 	if(checkAll()){
 	    var formula = $('#show').text()+')';
 	    var result=func(formula);//调用方法
@@ -275,6 +335,7 @@ function calculate(){
 	        warn('恭喜你，已进入下一题','info');
 	    }else{
 	        warn(result,'info');
+	        warn('再试试哦','info');
 	    }
 	}else{
 		warn('少选扑克牌了哦','info');
