@@ -1,17 +1,30 @@
 // 存储扑克图片地址
-var puke = [{"src":"img/puke/htA.jpg"},
-			{"src":"img/puke/ht2.jpg"},
-			{"src":"img/puke/ht3.jpg"},
-			{"src":"img/puke/ht4.jpg"},
-			{"src":"img/puke/ht5.jpg"},
-			{"src":"img/puke/ht6.jpg"},
-			{"src":"img/puke/ht7.jpg"},
-			{"src":"img/puke/ht8.jpg"},
-			{"src":"img/puke/ht9.jpg"},
-			{"src":"img/puke/ht10.jpg"},
-			{"src":"img/puke/htJ.jpg"},
-			{"src":"img/puke/htQ.jpg"},
-			{"src":"img/puke/htK.jpg"},];
+var puke = [{"src":"img/puke/htA.jpg"},
+
+			{"src":"img/puke/ht2.jpg"},
+
+			{"src":"img/puke/ht3.jpg"},
+
+			{"src":"img/puke/ht4.jpg"},
+
+			{"src":"img/puke/ht5.jpg"},
+
+			{"src":"img/puke/ht6.jpg"},
+
+			{"src":"img/puke/ht7.jpg"},
+
+			{"src":"img/puke/ht8.jpg"},
+
+			{"src":"img/puke/ht9.jpg"},
+
+			{"src":"img/puke/ht10.jpg"},
+
+			{"src":"img/puke/htJ.jpg"},
+
+			{"src":"img/puke/htQ.jpg"},
+
+			{"src":"img/puke/htK.jpg"},];
+
 
 // 随机产生四个数字并为图片替换相应数字的图片
 function beginGame(){
@@ -29,118 +42,132 @@ function beginGame(){
 	$('.img4').attr("value",i4+1);
 }
 
+//检测公式左右括号对应情况
+function checkParentheses(e){
+	var num_left = 1,//多一个右括号
+	num_right = 0;
+	for(var n=0;n<e.length;n++){
+		if(e.charAt(n)=='('){
+			num_left++;
+		}else if(e.charAt(n)==')'){
+			num_right++;
+		}
+	}
+	return num_right==num_left;
+}
+
 //计算公式方法
-i=0;//运算串索引
-function func(txt){
-	var res=0;//结果
-	var arr=new Array();//运算数组
-	var oper=new Array();//运算符数组
-	var x=0;//索引
-	var PRI=false;//主要判断乘法和除法的
-	if(txt=="")
-	{
-		return;
-	}
-	var number="";	//记录上一个字符	
-				
-	while(i<txt.length)
-	{
-		if(txt[i]=="=")
-		{
-			// alert("后面有等于号,不用写了");
-			return "后面有等于号,不用写了";
-		}
-		//var temp=parseInt(txt[i]);
-		if(isNaN(txt[i]))
-		{
-			if(txt[i]=="(")
-			{
-				i++;
-				number=func(txt);
-				
-			}
-			if(txt[i]==".")
-			{
-				number+=txt[i];
-				i++;
-				continue;
-			}
-			//检查上一个字符是不是运算符; 像 ++ -- 之类的运算符就不考虑了
-			if(isNaN(number))
-			{
-				// alert("非法表达式");
-				return "非法表达式";
-			}
-			if(number=="")
-			{
-				// alert("非法表达式");
-				return "非法表达式";
-			}
-			if(PRI)
-			{
-				if(oper[x-1]=="*")
-				{
-					number=parseFloat(number)*parseFloat(arr[x-1]);
-				}
-				if(oper[x-1]=="/")
-				{
-					if(number=="0")
-					{
-						// alert("除数不能为0");
+i=0;//运算串索引
+function func(txt)
+{
+	var res=0;//结果
+	var arr=new Array();//运算数组
+	var oper=new Array();//运算符数组
+	var x=0;//索引
+	var PRI=false;//主要判断乘法和除法的
+	if(txt=="")
+	{
+		return;
+	}
+	if(!checkParentheses(txt)){
+		return "非法表达式";
+	}
+	var number="";	//记录上一个字符	
+	while(i<txt.length)
+	{
+		if(txt[i]=="=")
+		{
+			// alert("后面有等于号,不用写了");
+			return "后面有等于号,不用写了";
+		}
+		//var temp=parseInt(txt[i]);
+		if(isNaN(txt[i]))
+		{
+			if(txt[i]=="(")
+			{
+				i++;
+				number=func(txt);
+			}
+			if(txt[i]==".")
+			{
+				number+=txt[i];
+				i++;
+				continue;
+			}
+			//检查上一个字符是不是运算符; 像 ++ -- 之类的运算符就不考虑了
+			if(isNaN(number))
+			{
+				// alert("非法表达式");
+				return "非法表达式";
+			}
+			if(number=="")
+			{
+				// alert("非法表达式");
+				return "非法表达式";
+			}
+			if(PRI)
+			{
+				if(oper[x-1]=="*")
+				{
+					number=parseFloat(number)*parseFloat(arr[x-1]);
+				}
+				if(oper[x-1]=="/")
+				{
+					if(number=="0")
+					{
+						// alert("除数不能为0");
 						return "除数不能为0";
-					}
-					number=parseFloat(arr[x-1])/parseFloat(number);
-				}
-				x--;
-			}
-	
-			switch(txt[i])
-			{
-				case "+" : 
-				case "-" : oper[x]=txt[i];
-							arr[x]=number;
-							number="";
-							PRI=false;
-							x++;
-							break;
-				case "*" : 
-				case "/" : oper[x]=txt[i];
-							arr[x]=number;
-							number="";
-							PRI=true;
-							x++;
-							break;
-			}
-			if(txt[i]==")")
-			{
-				arr[x]=number;
-				number="";
-				res=parseFloat(arr[0]);
-				for(var j=1;j<arr.length;j++)
-				{
-					switch(oper[j-1])
-					{
-						case "+" :res+=parseFloat(arr[j]);break;
-						case "-" :res-=parseFloat(arr[j]);break;
-					}
-				}
-				i++;
-				return res;
-			}
-			
-		}
-		else
-		{
-			number+=txt[i];
-		}
-		i++;
-	}
-	if(txt[i]!=")")
-	{
-		// alert("括号不匹配");
-		// i=0;
-		return "括号不匹配";
-	}
+					}
+					number=parseFloat(arr[x-1])/parseFloat(number);
+				}
+				x--;
+			}
+			switch(txt[i])
+			{
+				case "+" : 
+				case "-" : oper[x]=txt[i];
+							arr[x]=number;
+							number="";
+							PRI=false;
+							x++;
+							break;
+				case "*" : 
+				case "/" : oper[x]=txt[i];
+							arr[x]=number;
+							number="";
+							PRI=true;
+							x++;
+							break;
+			}
+			if(txt[i]==")")
+			{
+				arr[x]=number;
+				number="";
+				res=parseFloat(arr[0]);
+				for(var j=1;j<arr.length;j++)
+				{
+					switch(oper[j-1])
+					{
+						case "+" :res+=parseFloat(arr[j]);break;
+						case "-" :res-=parseFloat(arr[j]);break;
+					}
+				}
+				i++;
+				return res;
+			}
+		}
+		else
+		{
+			number+=txt[i];
+		}
+		i++;
+	}
+	if(txt[i]!=")")
+	{
+		// alert("括号不匹配");
+		// i=0;
+		return "括号不匹配";
+	}
 }
 
 
@@ -225,16 +252,31 @@ function opt(o){
     }
 }
 
+//判断是否四张牌都选择了
+function checkAll(){
+	var flag = true;
+	$(".numbtn").each(function(){
+      	if(!$(this).hasClass('active')){
+			flag = false;
+		}
+    });
+	return flag;
+}
+
 //计算结果并提示
 function calculate(){
-    var formula = $('#show').text()+')';
-    var result=func(formula);//调用方法
-    i=0;
-    if(result==24){
-        clr();
-        beginGame();
-        warn('恭喜你，已进入下一题','info');
-    }else{
-        warn(result,'info');
-    }
+	if(checkAll()){
+	    var formula = $('#show').text()+')';
+	    var result=func(formula);//调用方法
+	    i=0;
+	    if(result==24){
+	        clr();
+	        beginGame();
+	        warn('恭喜你，已进入下一题','info');
+	    }else{
+	        warn(result,'info');
+	    }
+	}else{
+		warn('少选扑克牌了哦','info');
+	}
 }
