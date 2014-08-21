@@ -335,6 +335,7 @@ function enterKey(event){
 	switch(event.keyCode) {
 		case 8:
 			// backspace
+			event.returnValue = false; //禁止网页后退 
 			del();
 			break;
 		case 27:
