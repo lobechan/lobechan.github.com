@@ -10,7 +10,7 @@ body{font-size: 18px;}
 	margin-bottom: 15px;
 }
 .bottom{
-	position:static;
+	position:fixed;
 	bottom:10%;
 }
 .ok{

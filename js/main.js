@@ -76,7 +76,7 @@ Toast.prototype = {
 		$("#toastMessage").remove();
 		//设置消息体
 		var msgDIV = new Array();
-		msgDIV.push('<div id="toastMessage">');
+		msgDIV.push('<div id="toastMessage" class="bottom">');
 		msgDIV.push('<span>'+this.message+'</span>');
 		msgDIV.push('</div>');
 		msgEntity = $(msgDIV.join('')).appendTo(this.context);
