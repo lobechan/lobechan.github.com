@@ -28,38 +28,25 @@ var puke = [{"src":"img/puke/htA.jpg"},
 
 			{"src":"img/puke/htK.jpg"},];
 
-//放入Cookie
-function setCookie(name, value, expires, path, domain, secure) {
-	var exdate = new Date();
-	exdate.setDate(exdate.getDate() + expires);
-	document.cookie = name + "=" + value +
-		((expires) ? "; expires=" + exdate.toGMTString() : "") +
-		((path) ? ("; path=" + path) : "") +
-		((domain) ? "; domain=" + domain : "") +
-		((secure) ? "; secure" : "");
+function getCookie(c_name){
+	if (document.cookie.length>0){ 
+		c_start=document.cookie.indexOf(c_name + "=")
+		if (c_start!=-1){ 
+			c_start=c_start + c_name.length+1 
+			c_end=document.cookie.indexOf(";",c_start)
+			if (c_end==-1) c_end=document.cookie.length
+			return unescape(document.cookie.substring(c_start,c_end))
+		} 
+	}
+	return ""
 }
 
-//取出Cookie值
-function getCookie(name) {
-    //如果存在Cookie，则取之，反之则返回一个空串
-    if (document.cookie.length > 0) {
-        //找到以“name=”样式开头的字符串在整个Cookie串中第一次出现的位置
-        start = document.cookie.indexOf(name + "=");
-        //如果找到了，才执行以下操作，后面的操作是取出name所对应的值
-        if (start != -1) {
-            //将第一次出现的位置加上name的长度，然后加上等号所在的1位，此时可将起始重新定位到等号后面的一位
-            start = start + name.length + 1;
-            //下面将找出value的终止位置，即从新的起始位置找，直到找到分号所在的位置
-            end = document.cookie.indexOf(";", start);
-            //如果没有找到分号，则表示已经到了最后一个名值对，而最后一个名值对是没有分号的，此时需要手动的将终止位置设置为整个cookie的长度
-            if (end == -1) {
-                end = document.cookie.length;
-            }
-            //在整个Cookie串截取出name所对应的value
-            return unescape(document.cookie.substring(start, end));
-        }
-    }
-    return "";
+function setCookie(c_name,value,expiredays)
+{
+	var exdate=new Date()
+	exdate.setDate(exdate.getDate()+expiredays)
+	document.cookie = c_name+ "=" + escape(value)+
+	((expiredays==null) ? "" : "; expires="+exdate.toGMTString())
 }
 
 // 消息提示
@@ -255,19 +242,20 @@ function setCookieAndShow(a,c){
 }
 
 // 随机产生四个数字并为图片替换相应数字的图片
-function beginGame(){
+function beginGame(e){
+	e = (e==12)?12:9;
 	var i1 = Math.ceil(Math.random()*(0-12)+12),//Math.random()*(n-m)+m  m-n之间
 	i2 = Math.ceil(Math.random()*(0-12)+12),
 	i3 = Math.ceil(Math.random()*(0-12)+12),
 	i4 = Math.ceil(Math.random()*(0-12)+12);
 	$('.img1').attr("src",puke[i1].src);
-	$('.img1').attr("value",i1+1);
+	$('.img1').attr("value",(((i1+1)>10) && e==9)?10:i1+1);
 	$('.img2').attr("src",puke[i2].src);
-	$('.img2').attr("value",i2+1);
+	$('.img2').attr("value",(((i2+1)>10) && e==9)?10:i2+1);
 	$('.img3').attr("src",puke[i3].src);
-	$('.img3').attr("value",i3+1);
+	$('.img3').attr("value",(((i3+1)>10) && e==9)?10:i3+1);
 	$('.img4').attr("src",puke[i4].src);
-	$('.img4').attr("value",i4+1);
+	$('.img4').attr("value",(((i4+1)>10) && e==9)?10:i4+1);
 }
 
 //清空
@@ -331,7 +319,7 @@ function calculate(){
 	    i=0;
 	    if(result==24){
 	        clr();
-	        beginGame();
+	        beginGame(getCookie('gameMode'));
 	        warn('恭喜你，已进入下一题','info');
 	    }else{
 	        warn(result,'info');
@@ -340,4 +328,93 @@ function calculate(){
 	}else{
 		warn('少选扑克牌了哦','info');
 	}
+}
+
+// 监听键盘事件
+function enterKey(event){
+	switch(event.keyCode) {
+		case 8:
+			// backspace
+			del();
+			break;
+		case 27:
+			// Esc
+			clr();
+			break;
+	  	case 13:
+	  		// Enter
+		  	calculate();
+		  	break;
+	  	case event.shiftKey && 57:
+	  		// alert('(');
+  			opt('(');
+  			break;
+  		case event.shiftKey && 48:
+	  		// alert(')');
+			opt(')');
+  			break;
+  		case !event.shiftKey && 189:
+	  		// alert('-');
+	  		opt('-');
+  			break;
+  		case 109:
+  			// alert('-');
+  			opt('-');
+  			break;
+  		case event.shiftKey && 187:
+	  		// alert('+');
+	  		opt('+');
+  			break;
+  		case 107:
+	  		// alert('+');
+	  		opt('+');
+  			break;
+  		case event.shiftKey && 56:
+	  		// alert('*');
+	  		opt('*');
+  			break;
+  		case 106:
+	  		// alert('*');
+	  		opt('*');
+  			break;
+  		case 191:
+	  		// alert('/');
+	  		opt('/');
+  			break;
+  		case 111:
+	  		// alert('/');
+	  		opt('/');
+  			break;
+  		// 48-57:0-9
+  		// 65-68:abcd
+  		case 65:
+  			if(!$('[name=numbtn1]').hasClass('active')){
+                setCookieAndShow(ArrayF,$('[name=numbtn1]').find('img').attr('value'));
+                $('[name=numbtn1]').addClass('active');
+            }
+            break;
+        case 66:
+        	if(!$('[name=numbtn2]').hasClass('active')){
+                setCookieAndShow(ArrayF,$('[name=numbtn2]').find('img').attr('value'));
+                $('[name=numbtn2]').addClass('active');
+            }
+            break;
+        case 67:
+        	if(!$('[name=numbtn3]').hasClass('active')){
+                setCookieAndShow(ArrayF,$('[name=numbtn3]').find('img').attr('value'));
+                $('[name=numbtn3]').addClass('active');
+            }
+            break;
+        case 68:
+        	if(!$('[name=numbtn4]').hasClass('active')){
+                setCookieAndShow(ArrayF,$('[name=numbtn4]').find('img').attr('value'));
+                $('[name=numbtn4]').addClass('active');
+            }
+            break;
+	}
+}
+
+//切换游戏模式
+function changeMode(){
+	(getCookie('gameMode')==9)?setCookie('gameMode',12):setCookie('gameMode',9);
 }
